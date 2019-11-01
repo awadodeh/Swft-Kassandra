@@ -35,7 +35,7 @@ extension Query {
          Returns a Result type through the given callback
      */
     public func prepare(oncompletion: @escaping ((Result)->Void)) {
-        config.connection?.execute(.prepare(query: self), oncompletion: oncompletion)
+        Config.shared.connection?.execute(.prepare(query: self), oncompletion: oncompletion)
     }
 
 
@@ -48,7 +48,7 @@ extension Query {
          Returns a Result type through the given callback
      */
     public func execute(oncompletion: @escaping ((Result)->Void)) {
-        config.connection?.execute(.query(using: self), oncompletion: oncompletion)
+        Config.shared.connection?.execute(.query(using: self), oncompletion: oncompletion)
     }
 }
 
@@ -66,7 +66,7 @@ extension Array where Element: Query {
     
     public func execute(with type: BatchType, consis: Consistency, oncompletion: @escaping ((Result)->Void)) {
         let request: Request = Request.batch(queries: self, type: type, flags: 0x00, consistency: .any)
-        config.connection?.execute(request, oncompletion: oncompletion)
+        Config.shared.connection?.execute(request, oncompletion: oncompletion)
     }
 }
 

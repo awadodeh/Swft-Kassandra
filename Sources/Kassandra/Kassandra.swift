@@ -46,13 +46,13 @@ public class Kassandra {
          Returns a QueryResult Enum through the callback
      
      */
-    public init(host: String = "localhost", port: Int32 = 9042, using authentication: (username: String, password: String)? = nil, cqlVersion: String = config.cqlVersion) {
+    public init(host: String = "localhost", port: Int32 = 9042, using authentication: (username: String, password: String)? = nil, cqlVersion: String = Config.shared.cqlVersion) {
 
-        config.setHostAndPort(host: host, port: port)
-        config.setCQLVersion(cqlVersion: cqlVersion)
+        Config.shared.setHostAndPort(host: host, port: port)
+        Config.shared.setCQLVersion(cqlVersion: cqlVersion)
         
         if let auth = authentication {
-            config.setAuth(PlainText(username: auth.username, password: auth.password))
+            Config.shared.setAuth(PlainText(username: auth.username, password: auth.password))
         }
 
         socket = nil
@@ -89,9 +89,9 @@ public class Kassandra {
         }
 
         do {
-            config.compression = compression
+            Config.shared.compression = compression
 
-            try sock.connect(to: config.host, port: config.port)
+            try sock.connect(to: Config.shared.host, port: Config.shared.port)
             
             let id = UInt16.random
             
@@ -104,9 +104,9 @@ public class Kassandra {
                     }
                 }
             
-            try Request.startup(options: config.options).write(id: id, writer: sock)
+            try Request.startup(options: Config.shared.options).write(id: id, writer: sock)
             
-            config.connection = self
+            Config.shared.connection = self
 
         } catch {
             oncompletion(Result.error(ErrorType.ConnectionError))
@@ -291,7 +291,7 @@ extension Kassandra {
     
     private func setSSL(_ SSLConfig: SSLService.Configuration) throws {
 
-        config.SSLConfig = SSLConfig
+        Config.shared.SSLConfig = SSLConfig
         
         socket?.delegate = try SSLService(usingConfiguration: SSLConfig)
     }
@@ -346,9 +346,9 @@ extension Kassandra {
                 return
             }
 
-            let body = buffer.subdata(in: Range(9..<9 + bodyLength))
+            let body = buffer.subdata(in: 9..<9 + bodyLength)
 
-            buffer = buffer.subdata(in: Range(9 + bodyLength..<buffer.count))
+            buffer = buffer.subdata(in: 9 + bodyLength..<buffer.count)
 
             handle(id: streamID, flags: flags, Result(opcode: opcode, body: body))
         
@@ -360,7 +360,7 @@ extension Kassandra {
         case .event(let event)       : delegate?.didReceiveEvent(event: event)
         case .authenticate(_)        :
             
-            guard let auth = config.auth, let onCompletion = map[id] else {
+            guard let auth = Config.shared.auth, let onCompletion = map[id] else {
                 map[id]?(response)
                 return
             }

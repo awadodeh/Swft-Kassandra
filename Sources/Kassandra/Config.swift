@@ -16,27 +16,17 @@
 
 import SSLService
 
-internal var config = Config.sharedInstance
-
-internal final class Config {
+public final class Config {
     
-    internal var host: String = "localhost"
-    
-    internal var port: Int32 = 9042
-    
-    internal var cqlVersion: String = "3.2.0"
-
-    internal let _version: Byte = 0x03
-
-    internal var connection: Kassandra? = nil
-
-    internal var SSLConfig: SSLService.Configuration? = nil
-
-    internal var flags: Byte = 0x00
-
-    internal var _compression: CompressionType = .none
-
-    internal var auth: Authenticator? = nil
+    var host: String = "localhost"
+    var port: Int32 = 9042
+    public var cqlVersion: String = "3.2.0"
+    let _version: Byte = 0x03
+    var connection: Kassandra? = nil
+    var SSLConfig: SSLService.Configuration? = nil
+    var flags: Byte = 0x00
+    var _compression: CompressionType = .none
+    var auth: Authenticator? = nil
 
     // Connection Options
     //
@@ -97,7 +87,7 @@ internal final class Config {
     public func setAuth(_ auth: Authenticator?) {
         self.auth = auth
     }
-    internal static var sharedInstance = Config()
+    public static var shared = Config()
     
     private init(){}
 }
